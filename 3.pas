@@ -1,26 +1,24 @@
-﻿var
-    Numbers: array[1..10] of Integer; 
-    i: Integer;
+type
+  TArray = array[1..10] of Integer;
+
+var
+  MyList: TArray;
+  i: Integer;
 
 begin
-    for i := 1 to 10 do
-    begin
-        Numbers[i] := i; 
-    end;
+  for i := 1 to 10 do
+    MyList[i] := i;
 
-    WriteLn('Список элементов:');
-    for i := 1 to 10 do
-    begin
-        Write(Numbers[i], ' ');
-    end;
+  writeln('Полный список:');
+  for i := 1 to 10 do
+    write(MyList[i], ' ');
+  writeln;
 
-    WriteLn('Четные элементы списка:');
-    for i := 1 to 10 do
-    begin
-        if Numbers[i] mod 2 = 0 then 
-        begin
-            Write(Numbers[i], ' ');
-        end;
-    end;
-    WriteLn; 
+  writeln('Четные элементы списка:');
+  for i := 1 to 10 do
+  begin
+    if MyList[i] mod 2 = 0 then
+      write(MyList[i], ' ');
+  end;
+  writeln;
 end.
