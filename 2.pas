@@ -1,40 +1,82 @@
-﻿type
-    WordRecord = record
+type
+    PWordRecord = ^TWordRecord;
+    TWordRecord = record
         Word: string;
         Frequency: Integer;
+        Next: PWordRecord;
     end;
 
 var
-    Words: array of WordRecord;  
-    WordCount: Integer;          
+    WordList: PWordRecord;  
     InputWord: string;
-    Found: Boolean;
-    i: Integer;
+    Current, Prev: PWordRecord;
+    WordCount: Integer;
 
 procedure AddWord(const NewWord: string);
+var
+    Found: Boolean;
 begin
     Found := False;
-    // Проверяем, есть ли слово уже в массиве
-    for var i := 0 to WordCount - 1 do
+    Current := WordList;
+    Prev := nil;
+
+    // Проверяем, есть ли слово уже в списке
+    while Current <> nil do
     begin
-        if Words[i].Word = NewWord then
+        if Current^.Word = NewWord then
         begin
-            Words[i].Frequency := Words[i].Frequency + 1; 
+            Current^.Frequency := Current^.Frequency + 1; 
             Found := True;
             Break;
         end;
+        Prev := Current;
+        Current := Current^.Next;
     end;
 
     if not Found then
     begin
-        SetLength(Words, WordCount + 1);
-        Words[WordCount].Word := NewWord;
-        Words[WordCount].Frequency := 1;
+        New(Current);
+        Current^.Word := NewWord;
+        Current^.Frequency := 1;
+        Current^.Next := nil;
+        
+        if Prev = nil then
+            WordList := Current
+        else
+            Prev^.Next := Current;
+            
         Inc(WordCount);
     end;
 end;
 
+procedure FreeWordList;
+var
+    Temp: PWordRecord;
 begin
+    Current := WordList;
+    while Current <> nil do
+    begin
+        Temp := Current;
+        Current := Current^.Next;
+        Dispose(Temp);
+    end;
+    WordList := nil;
+end;
+
+procedure PrintWordList;
+var
+    Temp: PWordRecord;
+begin
+    Temp := WordList;
+    while Temp <> nil do
+    begin
+        WriteLn(Temp^.Word, ': ', Temp^.Frequency);
+        Temp := Temp^.Next;
+    end;
+end;
+
+begin
+    WordList := nil;
     WordCount := 0;
 
     WriteLn('Введите текст (для завершения введите "exit"):');
@@ -48,9 +90,7 @@ begin
     WriteLn('Количество различных слов: ', WordCount);
 
     WriteLn('Алфавитно-частотный словарь:');
-    for i := 0 to WordCount - 1 do
-    begin
-        WriteLn(Words[i].Word, ': ', Words[i].Frequency);
-    end;
+    PrintWordList;
 
+    FreeWordList;
 end.
