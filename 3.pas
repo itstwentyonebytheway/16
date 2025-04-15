@@ -1,24 +1,49 @@
 type
-  TArray = array[1..10] of Integer;
+  PNode = ^TNode;  // Указатель на узел
+  TNode = record   // Сам узел
+    Value: Integer;
+    Next: PNode;   // Ссылка на следующий элемент
+  end;
 
 var
-  MyList: TArray;
+  Head, Current, NewNode: PNode;
   i: Integer;
 
 begin
+  Head := nil;  
+   
   for i := 1 to 10 do
-    MyList[i] := i;
+  begin
+    New(NewNode);             // Выделяем память под новый узел
+    NewNode^.Value := i;      // Записываем значение
+    NewNode^.Next := Head;    // Новый узел теперь указывает на старый Head
+    Head := NewNode;          // Перемещаем Head на новый узел
+  end;
 
-  writeln('Полный список:');
-  for i := 1 to 10 do
-    write(MyList[i], ' ');
+  writeln('Полный список (в обратном порядке, так как добавляли в начало):');
+  Current := Head;
+  while Current <> nil do
+  begin
+    write(Current^.Value, ' ');
+    Current := Current^.Next;
+  end;
   writeln;
 
   writeln('Четные элементы списка:');
-  for i := 1 to 10 do
+  Current := Head;
+  while Current <> nil do
   begin
-    if MyList[i] mod 2 = 0 then
-      write(MyList[i], ' ');
+    if Current^.Value mod 2 = 0 then
+      write(Current^.Value, ' ');
+    Current := Current^.Next;
   end;
   writeln;
+
+  Current := Head;
+  while Current <> nil do
+  begin
+    NewNode := Current^.Next;  // Запоминаем следующий узел
+    Dispose(Current);          // Освобождаем текущий
+    Current := NewNode;        // Переходим к следующему
+  end;
 end.
